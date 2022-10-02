@@ -9,6 +9,26 @@ resource "aws_key_pair" "midterm-key" {
 
 }
 
+data "template_file" "mariaUserData" {
+  template = file("files/mariadb.sh")
+
+  vars = {
+    db_name = var.database_name
+    db_user = var.database_user
+    db_pass = var.database_pass
+  }  
+}
+
+data "template_file" "wordPressUserData" {
+  template = file("files/wordpress2.sh")
+
+  vars = {
+    public_ip = aws_eip.wordpress.public_ip
+    admin_user = var.admin_user
+    admin_pass = var.admin_pass
+  }
+  
+}
 data "template_file" "phpconfig" {
   template = file("files/conf.wp-config.php")
 
@@ -17,22 +37,10 @@ data "template_file" "phpconfig" {
     db_host = aws_instance.mariadb.private_ip
     db_user = var.database_user
     db_pass = var.database_pass
-    db_name = var.database_name
+    db_name = var.database_name    
   }
  
 }
-
-# data "template_file" "dbinit" {
-#   template = file("files/setup.sql")
-
-#   vars = {
-#     db_user = var.database_user
-#     db_pass = var.database_pass
-#     db_name = var.database_name
-#     db_admin = var.admin_user
-#     db_admin_pass = var.admin_pass
-#   }
-# }
 
 resource "aws_instance" "wordpress" {
   ami           = var.ami
@@ -40,7 +48,7 @@ resource "aws_instance" "wordpress" {
   instance_type = "t2.micro"
 
   #run script when terraform apply
-  user_data = file("files/wordpress2.sh")
+  user_data = data.template_file.wordPressUserData.rendered
 
   key_name = "midterm-key"
 
@@ -64,30 +72,6 @@ resource "aws_instance" "wordpress" {
       private_key = file(var.ssh_priv_key)
     }
   }
-
-  # provisioner "file" {
-  #   content = data.template_file.dbinit.rendered
-  #   destination = "/tmp/dbinit.sql"
-
-  #   connection {
-  #     type        = "ssh"
-  #     user        = "ubuntu"
-  #     host = self.public_ip
-  #     private_key = file(var.ssh_priv_key)
-  #   }
-  # }
-  
-  # provisioner "remote-exec" {
-  #   inline = ["sudo mv /tmp/wp-config.php /var/www/html/wordpress/"] 
-    
-
-  #   connection {
-  #     type        = "ssh"
-  #     user        = "ubuntu"
-  #     host = self.public_ip
-  #     private_key = file(var.ssh_priv_key)
-  #   }
-  # }
 }
 
 
@@ -103,7 +87,7 @@ resource "aws_instance" "mariadb"{
 
   key_name = "midterm-key"
 
-  user_data = file("files/mariadb.sh")
+  user_data = data.template_file.mariaUserData.rendered
 
   tags = {
     Name = "mariadb"

@@ -5,9 +5,13 @@ sudo apt install mariadb-server -y
 
 sudo mysql <<EOF
 FLUSH PRIVILEGES;
-CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
-CREATE DATABASE wordpress;
-GRANT ALL PRIVILEGES ON wordpress.* TO 'username'@'localhost';
+CREATE DATABASE ${db_name};
+CREATE USER '${db_user}'@'%' IDENTIFIED BY '${db_pass}';
+GRANT ALL PRIVILEGES ON ${db_name}.* TO '${db_user}'@'%' WITH GRANT OPTION;
+
+CREATE USER '${db_user}'@'loclahost' IDENTIFIED BY '${db_pass}';
+GRANT ALL PRIVILEGES ON ${db_name}.* TO '${db_user}'@'localhost';
+
 
 EOF
 
