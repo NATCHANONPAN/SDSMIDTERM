@@ -1,7 +1,7 @@
 region            = "ap-southeast-1"
 availability_zone = "ap-southeast-1a"
 ami               = "ami-0d058fe428540cd89"
-bucket_name       = "natchanonLnwza007"
+bucket_name       = "natchanonlnwza007naja"
 database_name     = "wordpressnaja"
 database_user     = "usernamenaja"
 database_pass     = "passwordnaja"

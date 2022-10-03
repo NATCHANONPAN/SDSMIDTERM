@@ -26,21 +26,31 @@ data "template_file" "wordPressUserData" {
     public_ip = aws_eip.wordpress.public_ip
     admin_user = var.admin_user
     admin_pass = var.admin_pass
-  }
-  
-}
-data "template_file" "phpconfig" {
-  template = file("files/conf.wp-config.php")
-
-  vars = {
-    db_port = 3306
     db_host = aws_instance.mariadb.private_ip
     db_user = var.database_user
     db_pass = var.database_pass
-    db_name = var.database_name    
+    db_name = var.database_name
+    iam_user_access_key = aws_iam_access_key.my_iam_access_key.id
+    iam_user_secret = aws_iam_access_key.my_iam_access_key.secret
+    bucket_name = var.bucket_name
+    region = var.region
   }
- 
+  
 }
+# data "template_file" "phpconfig" {
+#   template = file("files/conf.wp-config.php")
+
+#   vars = {
+#     db_port = 3306
+#     db_host = aws_instance.mariadb.private_ip
+#     db_user = var.database_user
+#     db_pass = var.database_pass
+#     db_name = var.database_name
+#     access_key = aws_iam_access_key.my_iam_access_key
+#     secret_key = aws_iam_access_key.my_iam_access_key.secret
+#   }
+ 
+# }
 
 resource "aws_instance" "wordpress" {
   ami           = var.ami
@@ -56,22 +66,23 @@ resource "aws_instance" "wordpress" {
 
   subnet_id = aws_subnet.public1.id
   associate_public_ip_address = true
+  
 
   tags = {
     Name = "WordPress"
   }
 
-  provisioner "file" {
-    content = data.template_file.phpconfig.rendered
-    destination = "/tmp/wp-config.php"
+  # provisioner "file" {
+  #   content = data.template_file.phpconfig.rendered
+  #   destination = "/tmp/wp-config.php"
 
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      host = self.public_ip
-      private_key = file(var.ssh_priv_key)
-    }
-  }
+  #   connection {
+  #     type        = "ssh"
+  #     user        = "ubuntu"
+  #     host = self.public_ip
+  #     private_key = file(var.ssh_priv_key)
+  #   }
+  # }
 }
 
 

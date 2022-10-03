@@ -1,17 +1,39 @@
-# resource "aws_iam_user" "iam_user" {
-#     name = "natchanon"
-# }
+resource "aws_iam_user" "my_iam_user" {
+  name = "my_iam_user"
+  tags = {
+    Name = "iamuser"
+  }
+}
 
-# resource "aws_iam_access_key" "iam_access_key" {
-#     user = aws_iam_user.iam_user.name
-# }
 
-# resource "aws_iam_user_policy_attachment" "ec2-user-full" {
-#     user = aws_iam_user.iam_user.name
-#     policy_arn = aws_iam_policy.ec2-full.arn
-# }
+resource "aws_iam_access_key" "my_iam_access_key" {
+  user = aws_iam_user.my_iam_user.name
+}
 
-# resource "aws_iam_user_policy_attachment" "s3-user-full" {
-#     user = aws_iam_user.iam_user.name
-#     policy_arn = aws_iam_policy.s3-full.arn
-# }
+#secretkey = aws_iam_access_key.my_iam_access_key.encrypted_secret
+
+
+output "secretKey" {
+  value = aws_iam_access_key.my_iam_access_key.encrypted_secret
+}
+
+resource "aws_iam_user_policy" "s3_policy" {
+  name = "s3_policy"
+  user = aws_iam_user.my_iam_user.name
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+  })
+}
+
+
