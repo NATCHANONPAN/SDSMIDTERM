@@ -29,6 +29,8 @@ define( 'AS3CF_SETTINGS', serialize( array(
     
     'copy-to-s3' => true,
     'serve-from-s3' => true,
+    'remove-local-file' => true,
+
     
     
 ) ) );
