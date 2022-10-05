@@ -37,20 +37,6 @@ data "template_file" "wordPressUserData" {
   }
   
 }
-# data "template_file" "phpconfig" {
-#   template = file("files/conf.wp-config.php")
-
-#   vars = {
-#     db_port = 3306
-#     db_host = aws_instance.mariadb.private_ip
-#     db_user = var.database_user
-#     db_pass = var.database_pass
-#     db_name = var.database_name
-#     access_key = aws_iam_access_key.my_iam_access_key
-#     secret_key = aws_iam_access_key.my_iam_access_key.secret
-#   }
- 
-# }
 
 resource "aws_instance" "wordpress" {
   ami           = var.ami
@@ -61,13 +47,6 @@ resource "aws_instance" "wordpress" {
   user_data = data.template_file.wordPressUserData.rendered
 
   key_name = "midterm-key"
-
-  # vpc_security_group_ids = [aws_security_group.wordpress.id]
-  # vpc_security_group_ids = [aws_security_group.wordpress.id,aws_security_group.link.id]
-
-  # subnet_id = aws_subnet.public1.id
-  # associate_public_ip_address = true
-
   network_interface {
       device_index = 0
       network_interface_id = aws_network_interface.public1.id
@@ -76,11 +55,6 @@ resource "aws_instance" "wordpress" {
       device_index = 1
       network_interface_id = aws_network_interface.link1.id
   }
-  
-
-  
-  
-
   tags = {
     Name = "WordPress"
   }

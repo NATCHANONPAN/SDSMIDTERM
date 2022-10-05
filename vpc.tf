@@ -61,19 +61,17 @@ resource "aws_internet_gateway" "igw" {
 
 
 
-# resource "aws_nat_gateway" "natgw" {
-#   allocation_id = aws_eip.natgw.id
-#   subnet_id = aws_subnet.private2.id
+resource "aws_nat_gateway" "natgw" {
+  allocation_id = aws_eip.natgw.id
+  subnet_id = aws_subnet.public2.id
 
-#   tags = {
-#     Name = "nat-gateway"
-#   }  
-# }
+  tags = {
+    Name = "nat-gateway"
+  }  
+}
 
 resource "aws_route_table" "rt1" {
   vpc_id = aws_vpc.vpc.id
-
-
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
@@ -81,8 +79,7 @@ resource "aws_route_table" "rt1" {
 
   tags = {
     Name = "rt1"
-  }
-  
+  }  
 }
 
 resource "aws_route_table_association" "rt1asso" {
@@ -96,8 +93,8 @@ resource "aws_route_table" "rt2" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    # nat_gateway_id  = aws_nat_gateway.natgw.id
-    gateway_id = aws_internet_gateway.igw.id
+    nat_gateway_id  = aws_nat_gateway.natgw.id
+    # gateway_id = aws_internet_gateway.igw.id
   }
 
   tags = {

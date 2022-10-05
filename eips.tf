@@ -5,7 +5,7 @@ resource "aws_eip" "wordpress" {
 
 resource "aws_eip" "natgw" {
     vpc =true
-    network_interface = aws_network_interface.private2.id
+    # network_interface = aws_network_interface.private2.id
 }
 
 # resource "aws_eip_association" "eip_assoc" {
