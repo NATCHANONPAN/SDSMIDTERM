@@ -9,15 +9,15 @@ resource "aws_security_group" "link" {
     from_port = 3306
     to_port = 3306
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    # cidr_blocks = [aws_subnet.private1.cidr_block]
+    # cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [aws_subnet.private1.cidr_block]
   }
   egress {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    # cidr_blocks = [aws_subnet.private1.cidr_block]
+    # cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [aws_subnet.private1.cidr_block]
   }
 
   tags = {
@@ -63,13 +63,7 @@ resource "aws_security_group" "mariadb" {
   description = "only go outside"
   vpc_id =  aws_vpc.vpc.id
   
-  ingress {
-        description = "SSH"
-        protocol = "tcp"
-        from_port = 22
-      to_port = 22
-      cidr_blocks = ["0.0.0.0/0"]
-  }
+
 
   egress {
     from_port = 0
