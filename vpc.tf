@@ -20,25 +20,25 @@ resource "aws_subnet" "public1" {
   }
 }
 
-# resource "aws_subnet" "public2" {
-#   vpc_id = aws_vpc.vpc.id
-#   cidr_block =  "172.16.1.0/24"
-#   availability_zone = var.availability_zone
+resource "aws_subnet" "public2" {
+  vpc_id = aws_vpc.vpc.id
+  cidr_block =  "172.16.1.0/24"
+  availability_zone = var.availability_zone
 
-#   tags = {
-#     Name = "public-subnet-2"
-#   }
-# }
+  tags = {
+    Name = "public-subnet-2"
+  }
+}
 
-# resource "aws_subnet" "private1" {
-#   vpc_id = aws_vpc.vpc.id
-#   cidr_block = "172.16.2.0/24"
-#   availability_zone = var.availability_zone
+resource "aws_subnet" "private1" {
+  vpc_id = aws_vpc.vpc.id
+  cidr_block = "172.16.2.0/24"
+  availability_zone = var.availability_zone
 
-#   tags = {
-#     Name = "private-subnet-1"
-#   }
-# }
+  tags = {
+    Name = "private-subnet-1"
+  }
+}
 
 resource "aws_subnet" "private2" {
   vpc_id = aws_vpc.vpc.id
@@ -62,7 +62,7 @@ resource "aws_internet_gateway" "igw" {
 
 
 # resource "aws_nat_gateway" "natgw" {
-#   allocation_id = aws_eip.nat1.id
+#   allocation_id = aws_eip.natgw.id
 #   subnet_id = aws_subnet.private2.id
 
 #   tags = {
@@ -72,6 +72,7 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_route_table" "rt1" {
   vpc_id = aws_vpc.vpc.id
+
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -86,24 +87,29 @@ resource "aws_route_table" "rt1" {
 
 resource "aws_route_table_association" "rt1asso" {
   subnet_id = aws_subnet.public1.id
-  route_table_id = aws_route_table.rt1.id
-  
+  route_table_id = aws_route_table.rt1.id  
 }
 
 
-#no need asso between nat and rt
-# resource "aws_route_table" "rt2" {
-#   vpc_id = aws_vpc.vpc.id
+resource "aws_route_table" "rt2" {
+  vpc_id = aws_vpc.vpc.id
 
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     nat_gateway_id  = aws_nat_gateway.natgw.id
-#   }
+  route {
+    cidr_block = "0.0.0.0/0"
+    # nat_gateway_id  = aws_nat_gateway.natgw.id
+    gateway_id = aws_internet_gateway.igw.id
+  }
 
-#   tags = {
-#     Name = "rt2"
-#   }
+  tags = {
+    Name = "rt2"
+  }
   
-# }
+}
+
+resource "aws_route_table_association" "natgw_asso" {
+  subnet_id = aws_subnet.private2.id
+  route_table_id = aws_route_table.rt2.id
+  
+}
 
 

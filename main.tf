@@ -26,7 +26,7 @@ data "template_file" "wordPressUserData" {
     public_ip = aws_eip.wordpress.public_ip
     admin_user = var.admin_user
     admin_pass = var.admin_pass
-    db_host = aws_instance.mariadb.private_ip
+    db_host = aws_network_interface.link2.private_ip
     db_user = var.database_user
     db_pass = var.database_pass
     db_name = var.database_name
@@ -62,27 +62,29 @@ resource "aws_instance" "wordpress" {
 
   key_name = "midterm-key"
 
-  vpc_security_group_ids = [aws_security_group.wordpress.id]
+  # vpc_security_group_ids = [aws_security_group.wordpress.id]
+  # vpc_security_group_ids = [aws_security_group.wordpress.id,aws_security_group.link.id]
 
-  subnet_id = aws_subnet.public1.id
-  associate_public_ip_address = true
+  # subnet_id = aws_subnet.public1.id
+  # associate_public_ip_address = true
+
+  network_interface {
+      device_index = 0
+      network_interface_id = aws_network_interface.public1.id
+  }
+  network_interface {
+      device_index = 1
+      network_interface_id = aws_network_interface.link1.id
+  }
+  
+
+  
   
 
   tags = {
     Name = "WordPress"
   }
 
-  # provisioner "file" {
-  #   content = data.template_file.phpconfig.rendered
-  #   destination = "/tmp/wp-config.php"
-
-  #   connection {
-  #     type        = "ssh"
-  #     user        = "ubuntu"
-  #     host = self.public_ip
-  #     private_key = file(var.ssh_priv_key)
-  #   }
-  # }
 }
 
 
@@ -92,14 +94,24 @@ resource "aws_instance" "mariadb"{
   ami = var.ami
   availability_zone = var.availability_zone
   instance_type = "t2.micro"
-  subnet_id = aws_subnet.public1.id
-  vpc_security_group_ids = [aws_security_group.mariadb.id]
-  associate_public_ip_address = true
+  # subnet_id = aws_subnet.public1.id
+  # vpc_security_group_ids = [aws_security_group.mariadb.id]
+  # vpc_security_group_ids = [aws_security_group.mariadb.id,aws_security_group.link.id]
+  # associate_public_ip_address = true
 
   key_name = "midterm-key"
 
   user_data = data.template_file.mariaUserData.rendered
 
+  network_interface {
+      device_index = 1
+      network_interface_id = aws_network_interface.link2.id
+  }
+
+  network_interface {
+      device_index = 0
+      network_interface_id = aws_network_interface.private2.id
+  }
   tags = {
     Name = "mariadb"
   }
