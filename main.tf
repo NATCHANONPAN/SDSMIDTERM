@@ -22,6 +22,11 @@ data "template_file" "mariaUserData" {
 data "template_file" "wordPressUserData" {
   template = file("files/wordpress2.sh")
 
+  depends_on = [
+    aws_network_interface.link2,
+    aws_eip.wordpress,
+    aws_iam_access_key.my_iam_access_key,
+  ]
   vars = {
     public_ip = aws_eip.wordpress.public_ip
     admin_user = var.admin_user
@@ -45,6 +50,7 @@ resource "aws_instance" "wordpress" {
 
   #run script when terraform apply
   user_data = data.template_file.wordPressUserData.rendered
+
 
   key_name = "midterm-key"
   network_interface {

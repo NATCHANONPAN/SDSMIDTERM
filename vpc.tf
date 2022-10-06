@@ -76,6 +76,9 @@ resource "aws_nat_gateway" "natgw" {
   allocation_id = aws_eip.natgw.id
   subnet_id = aws_subnet.public2.id
 
+  depends_on = [
+    aws_eip.natgw
+  ]
   tags = {
     Name = "nat-gateway"
   }  

@@ -16,7 +16,6 @@ sudo rm index.html
 
 sudo apt install mysql-server -y
 
-sleep 20
 
 sudo wp config create --dbname=${db_name} --dbuser=${db_user} --dbpass=${db_pass} --dbhost=${db_host} --allow-root --extra-php << PHP
 define( 'AS3CF_SETTINGS', serialize( array(
