@@ -26,8 +26,6 @@ define( 'AS3CF_SETTINGS', serialize( array(
     'secret-access-key' => '${iam_user_secret}',
 
     'bucket' => '${bucket_name}',
-   
-    'region' => '${region}',
     
     'copy-to-s3' => true,
     'serve-from-s3' => true,

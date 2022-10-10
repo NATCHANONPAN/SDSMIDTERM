@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "b" {
   bucket = var.bucket_name
+  provider = aws.bucket
 
   tags = {
     Name        = "My bucket"
@@ -8,6 +9,7 @@ resource "aws_s3_bucket" "b" {
 
 resource "aws_s3_bucket_public_access_block" "app" {
   bucket = aws_s3_bucket.b.id
+  provider = aws.bucket
 
   block_public_acls       = false
   block_public_policy     = false
@@ -17,6 +19,7 @@ resource "aws_s3_bucket_public_access_block" "app" {
 
 resource "aws_s3_bucket_ownership_controls" "wordpressS3" {
   bucket = aws_s3_bucket.b.id
+  provider = aws.bucket
 
   rule {
     object_ownership = "BucketOwnerPreferred"
@@ -25,6 +28,7 @@ resource "aws_s3_bucket_ownership_controls" "wordpressS3" {
 
 resource "aws_s3_bucket_policy" "public_access" {
   bucket = aws_s3_bucket.b.id
+  provider = aws.bucket
   policy = jsonencode({
     "Version": "2012-10-17",
     "Id": "Policy1664879942248",

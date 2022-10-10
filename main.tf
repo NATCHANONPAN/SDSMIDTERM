@@ -2,6 +2,11 @@ provider "aws" {
   region = var.region
 }
 
+provider "aws" {
+  alias = "bucket"
+  region = "ap-southeast-1"
+}
+
 
 resource "aws_key_pair" "midterm-key" {
   key_name   = "midterm-key"
